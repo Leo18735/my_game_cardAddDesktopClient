@@ -2,12 +2,15 @@ import tkinter as tk
 from utils import get_config
 from Information import Information
 from Settings import Settings
+from Tcp import Tcp
 
 
 class Window:
     def __init__(self) -> None:
         self._config_path: str = "config.json"
         self._config: dict = {}
+
+        self._auth_token = "lfyCK9vUn9rKKu2AKlkAlfyCK9lUn9rKKu2AKlkAlfyCK9vUn9rKKu2AKlkA"
 
         self._root: tk.Tk = tk.Tk()
 
@@ -71,13 +74,36 @@ class Window:
         if not self._check_input():
             return
 
+        if not self._check_settings():
+            return
+
+        data: str = f"{self._auth_token}post{self._task1.get()}|{self._task2.get()}|{self._drink.get()}|" \
+                    f"{self._gender.get()} "
+        try:
+            Tcp(self._config["ip"], self._config["port"]).send(data)
+        except Exception as e:
+            information: Information = Information(self._root, str(e))
+            information.start()
+            return
+
         self._task1.set("")
         self._task2.set("")
         self._drink.set(0)
         self._gender.set("")
 
-        information: Information = Information(self._root, "Send successful")
+        information: Information = Information(self._root, "Sending successful")
         information.start()
+        return
+
+    def _check_settings(self) -> bool:
+        try:
+            if [x for x in ["ip", "port"] if x not in self._config]:
+                raise Exception("You need to set ip and port in settings first")
+            return True
+        except Exception as e:
+            information: Information = Information(self._root, str(e))
+            information.start()
+        return False
 
     def _load_config(self) -> None:
         self._config = get_config(self._config_path)

@@ -1,3 +1,4 @@
+import tkinter
 import tkinter as tk
 from utils import get_config, store_config
 from Information import Information
@@ -15,15 +16,13 @@ class Settings:
 
         self._load_config()
         self._setup()
-        return
 
     def _load_config(self) -> None:
         self._config = get_config(self._config_path)
         return
 
     def start(self) -> None:
-        self._root.mainloop()
-        return
+        self._root.wait_window()
 
     def _setup(self) -> None:
         tk.Label(self._root, text="Ip").grid(row=0, column=0)
@@ -54,7 +53,7 @@ class Settings:
         try:
             try:
                 int(self._port.get())
-            except Exception:  # should be TclError and ValueError but not working :(
+            except (tkinter.TclError, ValueError):
                 raise Exception("Port must be a number")
 
             if self._ip.get() == "":
@@ -72,4 +71,3 @@ class Settings:
 
     def _exit(self) -> None:
         self._root.destroy()
-        return

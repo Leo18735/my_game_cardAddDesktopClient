@@ -14,6 +14,5 @@ class Information:
         tk.Button(self._root, text="Ok", command=self._root.destroy).grid(row=1, column=0)
         return
 
-    def start(self) -> None:
-        self._root.mainloop()
-        return
+    def start(self):
+        self._root.wait_window()
